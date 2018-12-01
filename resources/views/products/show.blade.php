@@ -133,6 +133,10 @@
                             });
                             html += '</div>';
                             swal({content: $(html)[0], icon: 'error'})
+                        } else if(error.response.status === 400){
+                            swal(error.response.data.msg,'','error').then(function () {
+                                location.href = '{{ route('email_verification.send') }}';
+                            });
                         } else {
 
                             // 其他情况应该是系统挂了
