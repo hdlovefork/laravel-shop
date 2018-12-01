@@ -8,7 +8,6 @@ use App\Models\ProductSku;
 class AddCartRequest extends Request
 {
 
-
     /**
      * Get the validation rules that apply to the request.
      *
@@ -17,9 +16,9 @@ class AddCartRequest extends Request
     public function rules()
     {
         return [
-            'sku_id' => [
+            'sku_id'=>[
                 'required',
-                function ($attribute, $value, $fail) {
+                function($attribute, $value, $fail){
                     if (!$sku = ProductSku::find($value)) {
                         $fail('该商品不存在');
                         return;
@@ -36,23 +35,22 @@ class AddCartRequest extends Request
                         $fail('该商品库存不足');
                         return;
                     }
-                },
-            ],
-            'amount' => ['required', 'integer', 'min:1'],
+                }],
+            'amount'=>['required','integer','min:1']
         ];
     }
 
     public function attributes()
     {
         return [
-            'amount' => '商品数量'
+            'amount'=>'商品数量'
         ];
     }
 
     public function messages()
     {
         return [
-            'sku_id.required' => '请选择商品'
+            'sku_id.required'=>'请选择商品'
         ];
     }
 }
