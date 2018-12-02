@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Events\OrderPaid;
 use App\Listeners\RegisteredListener;
+use App\Listeners\SendOrderPaidMail;
+use App\Listeners\UpdateProductSoldCount;
 use Illuminate\Auth\Events\Registered;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
@@ -18,6 +20,13 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             RegisteredListener::class,
         ],
+        // 订单支付成功事件
+        OrderPaid::class=>[
+            // 更新产品销量
+            UpdateProductSoldCount::class,
+            // 发送邮件通知
+            SendOrderPaidMail::class,
+        ]
     ];
 
     /**
