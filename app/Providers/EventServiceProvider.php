@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Events\OrderPaid;
+use App\Events\OrderReviewed;
 use App\Listeners\RegisteredListener;
 use App\Listeners\SendOrderPaidMail;
+use App\Listeners\UpdateProductRating;
 use App\Listeners\UpdateProductSoldCount;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -26,6 +28,11 @@ class EventServiceProvider extends ServiceProvider
             UpdateProductSoldCount::class,
             // 发送邮件通知
             SendOrderPaidMail::class,
+        ],
+        // 订单评价事件
+        OrderReviewed::class=>[
+            // 更新产品评价数量
+            UpdateProductRating::class,
         ]
     ];
 
