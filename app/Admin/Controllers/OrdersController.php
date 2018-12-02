@@ -34,11 +34,11 @@ class OrdersController extends Controller
      * @param Content $content
      * @return Content
      */
-    public function show($id, Content $content)
+    public function show(Order $order, Content $content)
     {
         return $content
-            ->header('订单列表')
-            ->body($this->detail($id));
+            ->header('查看订单')
+            ->body(view('admin.orders.show', ['order' => $order]));
     }
 
     /**
@@ -99,7 +99,6 @@ class OrdersController extends Controller
             // 禁用删除和编辑按钮
             $actions->disableDelete();
             $actions->disableEdit();
-            $actions->disableView();
         });
         $grid->tools(function ($tools) {
             // 禁用批量删除按钮
