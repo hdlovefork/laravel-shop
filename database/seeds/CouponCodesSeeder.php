@@ -11,10 +11,6 @@ class CouponCodesSeeder extends Seeder
      */
     public function run()
     {
-        for ($i=0;$i<10000;$i++){
-            factory(\App\Models\CouponCode::class,100)->create();
-            $this->command->info('已生成' . ($i+1) * 100 . '条记录');
-            sleep(10);
-        }
+        factory(\App\Models\CouponCode::class,100)->create();
     }
 }
