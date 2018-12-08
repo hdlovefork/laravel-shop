@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\ViewComposer\CategoryTreeComposer;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Monolog\Logger;
@@ -17,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Carbon::setLocale('zh');
     }
 
     /**
