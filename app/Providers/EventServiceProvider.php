@@ -29,6 +29,7 @@ class EventServiceProvider extends ServiceProvider
             UpdateProductSoldCount::class,
             // 发送邮件通知
             SendOrderPaidMail::class,
+            // 更新众筹产品进度
             UpdateCrowdfundingProductProgress::class,
         ],
         // 订单评价事件

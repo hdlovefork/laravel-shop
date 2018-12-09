@@ -2,6 +2,8 @@
 
 return [
 
+    'ngrok_url' => env('NGROK_URL'),
+
     /*
      * 订单关闭超时时间（秒）
      */
