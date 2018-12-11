@@ -31,6 +31,7 @@ class InstallmentItem extends Model
         'payment_no',
         'refund_status',
     ];
+
     protected $dates = ['due_date', 'paid_at'];
 
     public function installment()
