@@ -115,12 +115,13 @@
             // 注意：Laravel-Admin 的 swal 是 v1 版本，参数和 v2 版本的不太一样
             swal({
                 title: '输入拒绝退款理由',
-                type: 'input',
+                type: 'warning',
+                input: 'text',
                 showCancelButton: true,
                 closeOnConfirm: false,
                 confirmButtonText: "确认",
                 cancelButtonText: "取消",
-            }, function(inputValue){
+            }).then(function(inputValue){
                 // 用户点击了取消，inputValue 为 false
                 // === 是为了区分用户点击取消还是没有输入
                 if (inputValue === false) {
@@ -163,7 +164,7 @@
                 closeOnConfirm: false,
                 confirmButtonText: "确认",
                 cancelButtonText: "取消",
-            }, function(ret){
+            }).then(function(ret){
                 // 用户点击取消，不做任何操作
                 if (!ret) {
                     return;
