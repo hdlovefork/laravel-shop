@@ -21,27 +21,28 @@ use Encore\Admin\Layout\Content;
 abstract class CommonProductsController extends Controller
 {
     use HasResourceActions;
+
     // 定义一个抽象方法，返回当前管理的商品类型
     abstract public function getProductType();
 
     public function index(Content $content)
     {
         return $content
-            ->header(Product::$typeMap[$this->getProductType()].'列表')
+            ->header(Product::$typeMap[$this->getProductType()] . '列表')
             ->body($this->grid());
     }
 
     public function edit($id, Content $content)
     {
         return $content
-            ->header('编辑'.Product::$typeMap[$this->getProductType()])
+            ->header('编辑' . Product::$typeMap[$this->getProductType()])
             ->body($this->form()->edit($id));
     }
 
     public function create(Content $content)
     {
         return $content
-            ->header('创建'.Product::$typeMap[$this->getProductType()])
+            ->header('创建' . Product::$typeMap[$this->getProductType()])
             ->body($this->form());
     }
 
@@ -76,6 +77,7 @@ abstract class CommonProductsController extends Controller
         // 在表单页面中添加一个名为 type 的隐藏字段，值为当前商品类型
         $form->hidden('type')->value($this->getProductType());
         $form->text('title', '商品名称')->rules('required');
+        $form->text('long_title', '商品长标题')->rules('required');
         $form->select('category_id', '类目')->options(function ($id) {
             $category = Category::find($id);
             if ($category) {
