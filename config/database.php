@@ -12,6 +12,10 @@ return [
     | you may use many connections at once using the Database library.
     |
     */
+    'elasticsearch' => [
+        // Elasticsearch 支持多台服务器负载均衡，因此这里是一个数组
+        'hosts' => explode(',', env('ES_HOSTS')),
+    ],
 
     'default' => env('DB_CONNECTION', 'mysql'),
 
