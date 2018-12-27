@@ -9,6 +9,7 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\SearchBuilders\ProductSearchBuilder;
 use App\Services\CategoryService;
+use App\Services\ProductService;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ProductsController extends Controller
@@ -83,11 +84,8 @@ class ProductsController extends Controller
         // 通过 collect 函数将返回结果转为集合，并通过集合的 pluck 方法取到返回的商品 ID 数组
         $productIds = collect($result['hits']['hits'])->pluck('_id')->all();
         // 通过 whereIn 方法从数据库中读取商品数据
-        $products = Product::query()
-            ->whereIn('id', $productIds)
-            // orderByRaw 可以让我们用原生的 SQL 来给查询结果排序
-            ->orderByRaw(sprintf("FIND_IN_SET(id, '%s')", join(',', $productIds)))
-            ->get();
+        $products = Product::query()->byIds($productIds)->get();
+
         // 返回一个 LengthAwarePaginator 对象
         $pager = new LengthAwarePaginator($products, $result['hits']['total'], $perPage, $page, [
             'path' => route('products.index', false), // 手动构建分页的 url
@@ -105,7 +103,7 @@ class ProductsController extends Controller
         ]);
     }
 
-    public function show(Product $product, Request $request)
+    public function show(Product $product, Request $request,ProductService $service)
     {
         // 判断商品是否已经上架，如果没有上架则抛出异常。
         if (!$product->on_sale) {
@@ -118,6 +116,7 @@ class ProductsController extends Controller
             // boolval() 函数用于把值转为布尔值
             $favored = boolval($user->favoriteProducts()->find($product->id));
         }
+
         $reviews = OrderItem::query()
             ->with(['order.user', 'productSku'])// 预先加载关联关系
             ->where('product_id', $product->id)
@@ -126,7 +125,12 @@ class ProductsController extends Controller
             ->limit(10)// 取出 10 条
             ->get();
 
-        return view('products.show', compact('product', 'favored', 'reviews'));
+        // 相似商品
+        $similarProductIds = $service->getSimilarProductIds($product,4);
+        // 根据 Elasticsearch 搜索出来的商品 ID 从数据库中读取商品数据
+        $similar = Product::byIds($similarProductIds)->get();
+
+        return view('products.show', compact('product', 'favored', 'reviews','similar'));
     }
 
     public function favor(Product $product, Request $request)
