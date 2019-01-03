@@ -6,7 +6,6 @@
 /public/fonts
 /public/mix-manifest.json
 /storage/*.key
-/storage/framework/
 /vendor
 /.idea
 /.vagrant
