@@ -2,6 +2,8 @@
 
 namespace Deployer;
 
+use Deployer\Component\PharUpdate\Update;
+
 require 'recipe/laravel.php';
 
 set('repository', 'https://github.com/hdlovefork/laravel-shop.git');
@@ -40,11 +42,18 @@ task('deploy:npm', function () {
     run('cd {{release_path}} && SASS_BINARY_SITE=http://npm.taobao.org/mirrors/node-sass npm install && npm run production', ['timeout' => 600]);
 });
 
-// 定义一个后置钩子，在 deploy:shared 之后执行 env:upload 任务
-after('deploy:shared', 'env:upload');
+// 定义一个 执行 es:migrate 命令的任务
+desc('Execute elasticsearch migrate');
+task('es:migrate', function() {
+    // {{bin/php}} 是 Deployer 内置的变量，是 PHP 程序的绝对路径。
+    run('mkdir -p /www/server/elasticsearch-6.5.4/config/analysis');
+    upload('database/synonyms.txt','/www/server/elasticsearch-6.5.4/config/analysis/synonyms.txt');
+    run('{{bin/php}} {{release_path}}/artisan es:migrate');
+})->once();
 
+
+after('deploy:shared', 'env:upload');
 after('deploy:failed', 'deploy:unlock');
-//after('deploy:vendors', 'deploy:yarn');
 before('deploy:symlink', 'artisan:migrate');
-// 在 deploy:vendors 之前调用 deploy:copy_dirs
 before('deploy:vendors', 'deploy:copy_dirs');
+after('cleanup','deploy:npm');
