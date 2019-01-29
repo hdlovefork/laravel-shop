@@ -51,9 +51,15 @@ task('es:migrate', function() {
     run('{{bin/php}} {{release_path}}/artisan es:migrate');
 })->once();
 
+desc('Import admin data');
+task('admin:import', function () {
+    run('{{bin/php}} {{release_path}}/artisan admin:import');
+});
 
 after('deploy:shared', 'env:upload');
 after('deploy:failed', 'deploy:unlock');
 before('deploy:symlink', 'artisan:migrate');
 before('deploy:vendors', 'deploy:copy_dirs');
+after('deploy:copy_dirs','admin:import');
+after('admin:import','es:migrate');
 after('cleanup','deploy:npm');
