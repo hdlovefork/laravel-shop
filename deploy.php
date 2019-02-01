@@ -6,18 +6,32 @@ use Deployer\Component\PharUpdate\Update;
 
 require 'recipe/laravel.php';
 
-set('repository', 'https://github.com/hdlovefork/laravel-shop.git');
+set('repository', 'https://gitee.com/deanhwong/laravel_shop.git');
 add('shared_files', []);
 add('shared_dirs', []);
 add('copy_dirs', ['node_modules', 'vendor']);
 set('writable_dirs', []);
 
-host('122.114.179.93')
+host('47.105.119.49')
     ->user('root')// 使用 root 账号登录
-    ->identityFile('./id_rsa')// 指定登录密钥文件路径
-    ->become('www')// 以 www 身份执行命令
+    ->identityFile('./laravel_shop_aliyun.pem')// 指定登录密钥文件路径
+    ->become('www-data')// 以 www 身份执行命令
     ->set('branch', 'es')
-    ->set('deploy_path', '/www/wwwroot/laravel_shop'); // 指定部署目录
+    ->set('deploy_path', '/var/www/laravel_shop'); // 指定部署目录
+
+host('47.104.246.60')
+    ->user('root')// 使用 root 账号登录
+    ->identityFile('./laravel_shop_aliyun.pem')// 指定登录密钥文件路径
+    ->become('www-data')// 以 www 身份执行命令
+    ->set('branch', 'es')
+    ->set('deploy_path', '/var/www/laravel_shop'); // 指定部署目录
+
+host('47.105.78.70')
+    ->user('root')// 使用 root 账号登录
+    ->identityFile('./laravel_shop_aliyun.pem')// 指定登录密钥文件路径
+    ->become('www-data')// 以 www 身份执行命令
+    ->set('branch', 'es')
+    ->set('deploy_path', '/var/www/laravel_shop'); // 指定部署目录
 
 // 定义一个上传 .env 文件的任务
 desc('Upload .env file');
@@ -42,24 +56,36 @@ task('deploy:npm', function () {
     run('cd {{release_path}} && SASS_BINARY_SITE=http://npm.taobao.org/mirrors/node-sass npm install && npm run production', ['timeout' => 600]);
 });
 
+desc('db:seed');
+task('db:seed',function (){
+    run('{{bin/php}} {{release_path}}/artisan db:seed');
+});
+
 // 定义一个 执行 es:migrate 命令的任务
 desc('Execute elasticsearch migrate');
 task('es:migrate', function() {
     // {{bin/php}} 是 Deployer 内置的变量，是 PHP 程序的绝对路径。
-    run('mkdir -p /www/server/elasticsearch-6.5.4/config/analysis');
-    upload('database/synonyms.txt','/www/server/elasticsearch-6.5.4/config/analysis/synonyms.txt');
+//    run('mkdir -p /www/server/elasticsearch-6.5.4/config/analysis');
+//    upload('database/synonyms.txt','/www/server/elasticsearch-6.5.4/config/analysis/synonyms.txt');
     run('{{bin/php}} {{release_path}}/artisan es:migrate');
 })->once();
 
 desc('Import admin data');
 task('admin:import', function () {
     run('{{bin/php}} {{release_path}}/artisan admin:import');
+})->once();
+
+desc('Restart Horizon');
+task('horizon:terminate', function() {
+    run('{{bin/php}} {{release_path}}/artisan horizon:terminate');
 });
 
 after('deploy:shared', 'env:upload');
 after('deploy:failed', 'deploy:unlock');
-before('deploy:symlink', 'artisan:migrate');
+after('deploy:vendors', 'artisan:migrate');
 before('deploy:vendors', 'deploy:copy_dirs');
-after('deploy:copy_dirs','admin:import');
+after('deploy:vendors','admin:import');
 after('admin:import','es:migrate');
-after('cleanup','deploy:npm');
+after('admin:import','db:seed');
+after('deploy:copy_dirs','deploy:yarn');
+after('deploy:symlink', 'horizon:terminate');
