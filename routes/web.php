@@ -14,6 +14,9 @@
 // Route::get('/', 'PagesController@root')->name('root');
 use App\Models\Order;
 
+Route::post('seckill_orders', 'OrdersController@seckill')->name('seckill_orders.store');
+
+
 Route::redirect('/', '/products')->name('root');
 Route::get('/products','ProductsController@index')->name('products.index');
 
@@ -56,7 +59,6 @@ Route::group(['middleware' => 'auth'], function() {
         Route::get('installments/{installment}', 'InstallmentsController@show')->name('installments.show');
         Route::get('installments/{installment}/alipay', 'InstallmentsController@payByAlipay')->name('installments.alipay');
         Route::get('installments/alipay/return', 'InstallmentsController@alipayReturn')->name('installments.alipay.return');
-        Route::post('seckill_orders', 'OrdersController@seckill')->name('seckill_orders.store');
     });
     // 结束
 });
