@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductSku;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Validation\Rule;
 
 class SeckillOrderRequest extends Request
@@ -32,7 +33,7 @@ class SeckillOrderRequest extends Request
                 'required',
                 function ($attribute, $value, $fail) {
                     // 从 Redis 中读取数据
-                    $stock = \Redis::get('seckill_sku_'.$value);
+                    $stock = Redis::get('seckill_sku_'.$value);
                     // 如果是 null 代表这个 SKU 不是秒杀商品
                     if (is_null($stock)) {
                         return $fail('该商品不存在');
