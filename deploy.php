@@ -12,7 +12,7 @@ add('shared_dirs', []);
 add('copy_dirs', ['node_modules', 'vendor']);
 set('writable_dirs', []);
 
-host('47.105.119.49')
+host('47.104.82.194')
     ->user('root')// 使用 root 账号登录
     ->identityFile('./laravel_shop_aliyun.pem')// 指定登录密钥文件路径
     ->become('www-data')// 以 www 身份执行命令
